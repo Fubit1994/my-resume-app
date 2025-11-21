@@ -8,8 +8,8 @@ import { environment } from '../environments/environment';
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  templateUrl: './app.html',
+  styleUrls: ['./app.css']
 })
 export class App implements AfterViewChecked {
   @ViewChild('chatContainer') private chatContainer!: ElementRef;
