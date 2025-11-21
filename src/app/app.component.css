@@ -1,0 +1,31 @@
+:host {
+    display: block;
+    --primary-color: #3b82f6;
+    --text-dark: #1e293b;
+  }
+
+  .section-title {
+    @apply text-2xl font-bold text-slate-800;
+  }
+
+  /* 動畫 */
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in-up {
+    animation: fade-in-up 0.3s ease-out forwards;
+  }
+
+  @media print {
+    @page { margin: 1cm; size: auto; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    section, .break-inside-avoid { break-inside: avoid; }
+    .shadow-xl, .shadow-sm, .shadow-lg { box-shadow: none !important; }
+  }
+  
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: #f1f5f9; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  
