@@ -19,15 +19,39 @@ export class App implements AfterViewChecked {
   // === 履歷資料 ===
   profile = {
     name: '洪偉晉',
-    title: '高級軟體工程師',
+    title: '高級工程師',
     email: 'fubit1994@gmail.com',
     phone: '0927-275-816',
-    location: '台南市安南區',
+    location: '台南市歸仁區',
     age: 31,
     military: '役畢',
-    totalExp: '4-5 年工作經歷',
-    bio: '擁有 4-5 年豐富工作經驗的軟體工程師，主要負責 Vue3 前端與 .Net Core 6 API 後端開發。具備 Oracle、Greenplum 資料庫操作經驗，以及 Trinity 資料 ETL 作業能力。研究所時期專攻資料探勘與大數據分析，培養了獨立思考與解決問題的能力。目前正積極自學 Angular，期許能為團隊帶來更多元貢獻。'
+    totalExp: '7-8 年工作經歷',
+    bio: '我是 Jim, 一名擁有 7 至 8 年實戰經驗的軟體工程師, 擅長利用 .NET 與 Vue 等現代化框架建構系統。同時也不排斥 JAVA、Python 等各種程式語言, 目前正積極投入 Angular 的自學, 喜歡靈活思考、挑戰各種技術難題。',
+    assets:'/assets/img/7562.JPG'
   };
+
+  autobiography = [
+    {
+      title: '職涯核心價值: 數據驅動與問題解決',
+      content: '我是一名擁有 7 至 8 年實戰經驗的軟體工程師，擅長利用 .NET 與 Vue 等現代化框架建構系統。我的職涯核心理念深受指導教授黃仁鵬先生的教育理念——「培養帶得走的能力」所影響。這使我在面對快速更迭的技術環境時，能保持獨立思考、快速對接商業需求，並將技術轉化為實際的產能價值。'
+    },
+    {
+      title: '學術研究: 大數據與情感分析專長',
+      content: '在研究所時期，我專攻資料探勘、資料庫系統及大數據分析。我的碩士論文《社群網路輿情之情感分析——以 Dcard 為例》，成功開發出一套自動化情感分析系統。該系統能透過爬蟲精準捕捉網路輿情，為決策者提供數據支持，大幅取代了繁瑣的人力標記工作。'
+    },
+    {
+      title: '工作經歷: 從老舊系統維護到雲端架構開發',
+      content: '在過去多年的職涯中，我經歷了從傳統架構到現代雲端化部署的完整蛻變。在群創光電，我主導 Vue 3 前端與 .NET 6 API 後端開發，並推動模듈화設計與 CI/CD 自動化流程；在此之前，也處理過 JSP 系統升級、VBA 效能調校，並在漢龍資訊負責 .NET MVC 系統開發，具備從需求分析到專案交付的完整經驗。'
+    },
+    {
+      title: '團隊協作與人際圓融',
+      content: '身為家庭中的老么，我具備高度的親和力與彈性。在職場中，我深諳「軟體開發是團隊運動」的道理。無論是擔任外包開發還是內部工程師，我都能以圓融的溝通技巧與跨部門同仁協作，確保技術方案能精準對接使用者需求，並在壓力下保持專業與穩定。'
+    },
+    {
+      title: '未來展望',
+      content: '我從不滿足於現狀，目前正積極精進 Angular 框架，期許自己成為更全面的多框架技術專家。憑藉著多年累積的技術廣度、大數據分析的敏銳度，以及對解決問題的熱忱，我深信自己能為貴團隊帶來實質的技術貢獻與正向能量。期待有機會與您進一步交流，分享我能為貴公司創造的價值。'
+    }
+  ];
 
   experiences: Experience[] = [
     {
@@ -129,17 +153,12 @@ export class App implements AfterViewChecked {
     }
   ];
 
-  // === AI Chat Logic ===
-  isChatOpen = false;
-  isChatLoading = false;
-  userChatInput = '';
-  chatMessages: ChatMessage[] = [];
-  
-  // === Cover Letter Logic ===
-  isCoverLetterModalOpen = false;
-  isCoverLetterLoading = false;
-  jobDescription = '';
-  generatedCoverLetter = '';
+  // === Autobiography Logic ===
+  isAutobiographyOpen = false;
+
+  toggleAutobiography() {
+    this.isAutobiographyOpen = !this.isAutobiographyOpen;
+  }
 
   ngAfterViewChecked() {
     this.scrollToBottom();
@@ -151,124 +170,6 @@ export class App implements AfterViewChecked {
         this.chatContainer.nativeElement.scrollTop = this.chatContainer.nativeElement.scrollHeight;
       }
     } catch(err) { }
-  }
-
-  toggleChat() {
-    this.isChatOpen = !this.isChatOpen;
-  }
-
-  quickAsk(question: string) {
-    this.userChatInput = question;
-    this.sendMessage();
-  }
-
-  async sendMessage() {
-    if (!this.userChatInput.trim() || this.isChatLoading) return;
-
-    const userText = this.userChatInput;
-    this.chatMessages.push({ role: 'user', text: userText });
-    this.userChatInput = '';
-    this.isChatLoading = true;
-
-    try {
-      // 構建 Prompt
-      const systemPrompt = `
-        你現在是「洪偉晉」，一位高級軟體工程師。請用第一人稱（我）回答面試官或招聘者的問題。
-        請基於以下履歷資料回答，保持專業、自信但謙虛的語氣。用繁體中文回答。
-        若被問到履歷上沒有的資訊，請誠實說明或禮貌地將話題引導回你的強項。
-        
-        履歷資料：
-        ${JSON.stringify({ profile: this.profile, experiences: this.experiences, skills: this.skills, educations: this.educations })}
-      `;
-
-      const response = await this.callGemini(userText, systemPrompt);
-      this.chatMessages.push({ role: 'model', text: response });
-
-    } catch (error) {
-      this.chatMessages.push({ role: 'model', text: '抱歉，我現在有點累（連線錯誤），請稍後再試！', isError: true });
-      console.error(error);
-    } finally {
-      this.isChatLoading = false;
-    }
-  }
-
-  // === Cover Letter Logic ===
-  toggleCoverLetterModal() {
-    this.isCoverLetterModalOpen = !this.isCoverLetterModalOpen;
-  }
-
-  resetCoverLetter() {
-    this.generatedCoverLetter = '';
-  }
-
-  async generateCoverLetter() {
-    if (!this.jobDescription.trim() || this.isCoverLetterLoading) return;
-
-    this.isCoverLetterLoading = true;
-    
-    try {
-       const systemPrompt = `
-        你是一位專業的職涯顧問。請根據以下「求職者履歷」與「目標職缺描述 (JD)」，為求職者「洪偉晉」撰寫一封專業、有說服力的求職信 (Cover Letter)。
-        
-        要求：
-        1. 語言：繁體中文。
-        2. 格式：標準求職信格式。
-        3. 內容策略：強調洪偉晉的技能（如 Vue3, .NET Core, Oracle, ETL 等）如何能解決該 JD 中的具體痛點。
-        4. 語氣：熱忱、專業、自信。 
-        
-        求職者履歷：
-        ${JSON.stringify({ profile: this.profile, experiences: this.experiences, skills: this.skills })}
-      `;
-
-      const userPrompt = `目標職缺描述 (JD)：\n${this.jobDescription}`;
-
-      const response = await this.callGemini(userPrompt, systemPrompt);
-      this.generatedCoverLetter = response;
-
-    } catch (error) {
-      console.error(error);
-      alert('生成失敗，請稍後再試。');
-    } finally {
-      this.isCoverLetterLoading = false;
-    }
-  }
-
-  copyToClipboard() {
-    // 使用簡單的 clipboard API (注意：在某些非 https 環境可能受限，但在 immersive 預覽中通常可以)
-    const textarea = document.createElement('textarea');
-    textarea.value = this.generatedCoverLetter;
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
-    
-    // 簡單的 UI 回饋 (這裡用 alert 簡化，實際可用 toast)
-    // alert('已複製到剪貼簿！'); 
-    // 由於不能用 alert, 我們可以暫時改變按鈕文字或什麼都不做，使用者通常會試著貼上
-  }
-
-  // === Gemini API Helper ===
-  async callGemini(userText: string, systemInstruction: string): Promise<string> {
-    const apiKey = environment.geminiApiKey; // API Key injected by environment
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-    
-    const payload = {
-      contents: [{ parts: [{ text: userText }] }],
-      systemInstruction: { parts: [{ text: systemInstruction }] }
-    };
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      throw new Error(`Gemini API Error: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || '無回應';
   }
 
   printResume() {
